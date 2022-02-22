@@ -15,10 +15,13 @@ const Container = styled.div`
   position: relative;
 
   .marker {
-    background-image: url('/media/pin.svg');
+    background-image: url('/media/pin.png');
     background-size: cover;
-    width: 20px;
-    height: 20px;
+    width: 48px;
+    height: 48px;
+    position: absolute;
+    top: 0;
+    left: 0;
   }
   .mapboxgl-control-container {
     a {
@@ -49,8 +52,8 @@ const Map = ({ location, loading }: MapProps) => {
   const long = parseFloat(location.longitude)
 
   const container = useRef<HTMLDivElement | null>(null)
-  const map = useRef<mapboxgl.Map | null>(null)
-  const marker = useRef<HTMLDivElement | null>(null)
+  const map = useRef<mapboxgl.Map | null>()
+  const marker = useRef<HTMLDivElement | null>()
 
   const addMapMarker = () => {
     if (!map.current) return
