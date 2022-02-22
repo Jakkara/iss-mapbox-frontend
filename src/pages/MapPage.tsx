@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react'
 import axios from 'axios'
-import { FadeIn, FadeText, Header1 } from 'components/common'
+import { FadeIn, Header1 } from 'components/common'
+import Map from 'components/Map'
 
 const API_URL = 'http://api.open-notify.org/iss-now.json'
 const SUCCESS_STATUS = 'success'
 
-type Location = {
+export type Location = {
   latitude: string
   longitude: string
 }
@@ -33,7 +34,7 @@ const MapPage = () => {
       setActiveCoordinates(iss_position)
     }
     refreshCoordinates()
-    setInterval(refreshCoordinates, 5000)
+    setInterval(refreshCoordinates, 10000)
   }, [])
 
   return (
@@ -43,8 +44,7 @@ const MapPage = () => {
       </Header1>
       {activeCoordinates && (
         <FadeIn>
-          <h3>Latitude: {!fetchActive && <FadeText>{activeCoordinates?.latitude}</FadeText>}</h3>
-          <h3>Longitude: {!fetchActive && <FadeText>{activeCoordinates?.longitude}</FadeText>}</h3>
+          <Map location={activeCoordinates} loading={fetchActive}/>
         </FadeIn>
       )}
     </FadeIn>
