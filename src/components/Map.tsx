@@ -13,17 +13,32 @@ type MapProps = {
 }
 const Container = styled.div`
   position: relative;
+
+  .marker {
+    background-image: url('/media/pin.svg');
+    background-size: cover;
+    width: 20px;
+    height: 20px;
+  }
+  .mapboxgl-control-container {
+    a {
+      text-decoration: none;
+      color: initial;
+      font-size: 12px;
+    }
+  }
 `
 
 const MapContainer = styled.div`
   height: 400px;
+  width: 600px;
 `
 const Overlay = styled.div`
   position: absolute;
   top: 16px;
   left: 16px;
   max-width: 80%;
-  background-color: rgba(59, 67, 172, 0.8);
+  background-color: rgba(84, 87, 129, 0.8);
   color: #fff;
   padding: 6px 9px;
   border-radius: 12px;
@@ -35,6 +50,18 @@ const Map = ({ location, loading }: MapProps) => {
 
   const container = useRef<HTMLDivElement | null>(null)
   const map = useRef<mapboxgl.Map | null>(null)
+  const marker = useRef<HTMLDivElement | null>(null)
+
+  const addMapMarker = () => {
+    if (!map.current) return
+
+    if (marker.current) marker.current.remove()
+    const node = document.createElement('div')
+    node.className = 'marker'
+    marker.current = node
+
+    new mapboxgl.Marker(marker.current).setLngLat([long, lat]).addTo(map.current)
+  }
 
   useEffect(() => {
     if (map.current || !container.current) return
@@ -45,6 +72,10 @@ const Map = ({ location, loading }: MapProps) => {
       center: [long, lat]
     })
   }, [container])
+
+  useEffect(() => {
+    addMapMarker()
+  }, [long, lat])
 
   return (
     <Container>
