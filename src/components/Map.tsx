@@ -1,21 +1,22 @@
-import React, { useRef, useEffect } from 'react'
+import React, { useRef, useEffect, useState } from 'react'
 import mapboxgl from 'mapbox-gl'
 import { Location } from 'pages/MapPage'
 import styled from 'styled-components'
-import { FadeText } from './common'
+import { FadeText, Overlay } from './common'
 
 mapboxgl.accessToken =
   'pk.eyJ1IjoiamFsaXJhaW5pbyIsImEiOiJja3p4MmZoZ3EwaXJmMm9udTBkNGM2NzliIn0.s0qLcUpZIuwyGddm-S6N4A'
 
-type MapProps = {
-  location: Location
-  loading: boolean
-}
 const Container = styled.div`
   position: relative;
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
 
   .marker {
-    background-image: url('/media/pin.png');
+    background-image: url('/media/pin.svg');
     background-size: cover;
     width: 48px;
     height: 48px;
@@ -33,23 +34,19 @@ const Container = styled.div`
 `
 
 const MapContainer = styled.div`
-  height: 400px;
-  width: 600px;
+  height: 100%;
+  width: 100%;
 `
-const Overlay = styled.div`
-  position: absolute;
-  top: 16px;
-  left: 16px;
-  max-width: 80%;
-  background-color: rgba(84, 87, 129, 0.8);
-  color: #fff;
-  padding: 6px 9px;
-  border-radius: 12px;
-`
+
+type MapProps = {
+  location: Location
+  loading: boolean
+}
 
 const Map = ({ location, loading }: MapProps) => {
   const lat = parseFloat(location.latitude)
   const long = parseFloat(location.longitude)
+  const [mapLoaded, setMapLoaded] = useState<boolean>(false)
 
   const container = useRef<HTMLDivElement | null>(null)
   const map = useRef<mapboxgl.Map | null>()
@@ -74,6 +71,7 @@ const Map = ({ location, loading }: MapProps) => {
       style: 'mapbox://styles/mapbox/satellite-streets-v11',
       center: [long, lat]
     })
+    map.current.on('load', () => setMapLoaded(true))
   }, [container])
 
   useEffect(() => {
@@ -82,13 +80,20 @@ const Map = ({ location, loading }: MapProps) => {
 
   return (
     <Container>
-      <Overlay>
-        {!loading && (
-          <FadeText>
-            Latitude: {lat} | Longitude : {long}
-          </FadeText>
-        )}
-      </Overlay>
+      {mapLoaded && (
+        <>
+          <Overlay vertical="right" style={{ width: '30%'}}>
+            {!loading && (
+              <FadeText>
+                Latitude: {lat} | Longitude : {long}
+              </FadeText>
+            )}
+          </Overlay>
+          <Overlay vertical="left">
+            <FadeText>ISS On The Map</FadeText>
+          </Overlay>
+        </>
+      )}
       <MapContainer ref={container} />
     </Container>
   )
